@@ -21,14 +21,12 @@ local default_config = {
 
 M.config = vim.deepcopy(default_config)
 
--- Helper: shallow-merge user config into default
 local function merge_config(user_config)
   if not user_config then
     return
   end
   for k, v in pairs(user_config) do
     if type(v) == "table" and type(M.config[k]) == "table" then
-      -- replace, not deep-merge lists like patterns/detection_methods
       M.config[k] = v
     else
       M.config[k] = v
@@ -36,12 +34,10 @@ local function merge_config(user_config)
   end
 end
 
--- Get LSP root for a buffer, if any
 local function get_lsp_root(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local clients = {}
 
-  -- Neovim 0.10+ has vim.lsp.get_clients
   if vim.lsp.get_clients then
     clients = vim.lsp.get_clients({ bufnr = bufnr })
   elseif vim.lsp.buf_get_clients then
@@ -84,7 +80,6 @@ local function get_pattern_root(bufnr)
     return nil
   end
 
-  -- Search upward from the buffer's directory
   local found = vim.fs.find(patterns, {
     path = dir,
     upward = true,
@@ -160,14 +155,12 @@ local function set_cwd_for_buf(bufnr)
     return
   end
 
-  -- Optional feedback (comment out if you don't want messages)
   vim.notify(
     ("project.nvim: set cwd to %s (via %s)"):format(root, method),
     vim.log.levels.DEBUG
   )
 end
 
--- Expose a command to manually set root
 local function setup_user_commands()
   vim.api.nvim_create_user_command("ProjectRoot", function()
     set_cwd_for_buf(0)
@@ -176,7 +169,6 @@ local function setup_user_commands()
   })
 end
 
--- Setup autocommands
 local function setup_autocmds()
   local group = vim.api.nvim_create_augroup("ProjectRootAutocmd", {
     clear = true,
