@@ -130,7 +130,7 @@ local function set_cwd_for_buf(bufnr)
     return
   end
 
-  local root, method = detect_root(bufnr)
+  local root, _ = detect_root(bufnr)
   if not root then
     return
   end
@@ -154,11 +154,6 @@ local function set_cwd_for_buf(bufnr)
     )
     return
   end
-
-  vim.notify(
-    ("project.nvim: set cwd to %s (via %s)"):format(root, method),
-    vim.log.levels.DEBUG
-  )
 end
 
 local function setup_user_commands()
